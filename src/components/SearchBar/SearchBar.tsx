@@ -1,35 +1,30 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import css from "./SearchBar.module.css";
 
 export interface SearchBarProps {
-  initialQuery?: string;
-  onSubmit: (value: string) => void;
+  onSearch: (value: string) => void;
+  initialValue?: string;
 }
 
 export default function SearchBar({
-  initialQuery = "",
-  onSubmit,
+  onSearch,
+  initialValue = "",
 }: SearchBarProps) {
-  const [value, setValue] = useState(initialQuery);
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setValue(e.target.value);
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [value, setValue] = useState(initialValue);
+
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSubmit(value.trim());
+    onSearch(value.trim());
   };
+
   return (
-    <form
-      className={css.form}
-      onSubmit={handleSubmit}
-      role="search"
-      aria-label="Search movies">
+    <form className={css.form} onSubmit={handleSubmit}>
       <input
         className={css.input}
         type="text"
-        placeholder="Search movies..."
+        placeholder="Search movies…"
         value={value}
-        onChange={handleChange}
-        aria-label="Query"
+        onChange={(e) => setValue(e.target.value)}
       />
       <button className={css.button} type="submit">
         Search
