@@ -1,0 +1,38 @@
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.poster {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+.placeholder {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: repeating-linear-gradient(
+    45deg,
+    #f6f7f8,
+    #f6f7f8 10px,
+    #eee 10px,
+    #eee 20px
+  );
+}
+.meta {
+  padding: 8px 10px 12px;
+}
+.title {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+.sub {
+  margin: 0;
+  color: #666;
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+}
