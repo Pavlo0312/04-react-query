@@ -1,14 +1,15 @@
-import { useState } from "react";
+// src/components/App/App.tsx
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
 
+import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import SearchBar from "../SearchBar/SearchBar";
 import MovieModal from "../MovieModal/MovieModal";
 
-import { fetchMovies } from "../../services/api";
+import movieService from "../../services/movieService"; // у ньому є method `search`
 import type { Movie, MoviesResponse } from "../../types/movie";
 
 import css from "./App.module.css";
@@ -18,9 +19,9 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Movie | null>(null);
 
-  const { data, isFetching, isError, error } = useQuery<MoviesResponse>({
+  const { data, isFetching, isError } = useQuery<MoviesResponse>({
     queryKey: ["movies", query, page],
-    queryFn: () => fetchMovies(query, page),
+    queryFn: () => movieService.search(query, page), // <- тут!
     enabled: query.trim().length > 0,
     placeholderData: (prev) => prev,
     staleTime: 0,
@@ -34,36 +35,46 @@ export default function App() {
     setPage(1);
   };
 
-  const handlePageChange = (item: { selected: number }) => {
-    setPage(item.selected + 1);
+  const handlePageChange = (e: { selected: number }) => {
+    setPage(e.selected + 1);
   };
 
   return (
-    <div className={css.app}>
+    <div className={css.container}>
+      <p className={css.brand}>Powered by TMDB</p>
+
+      {/* SearchBar без value — лише колбек */}
       <SearchBar onSearch={handleSearch} />
 
       {isError && (
-        <ErrorMessage message={(error as Error)?.message ?? "Error"} />
+        <ErrorMessage message="Не вдалося завантажити фільми. Спробуйте ще раз." />
       )}
 
-      {isFetching ? (
-        <Loader />
-      ) : (
-        <MovieGrid movies={movies} onSelect={(m) => setSelected(m)} />
+      {isFetching && <Loader />}
+
+      {!isFetching && query.trim() !== "" && movies.length === 0 && (
+        <ErrorMessage message="Нічого не знайдено." />
       )}
+
+      {/* movies замість items */}
+      <MovieGrid movies={movies} onSelect={setSelected} />
 
       {totalPages > 1 && (
-        <ReactPaginate
-          containerClassName={css.pagination}
-          pageClassName={css.page}
-          activeClassName={css.active}
-          previousLabel="«"
-          nextLabel="»"
-          breakLabel="…"
-          onPageChange={handlePageChange}
-          forcePage={page - 1}
-          pageCount={Math.min(totalPages, 500)}
-        />
+        <div className={css.paginationWrap}>
+          <ReactPaginate
+            pageCount={totalPages}
+            forcePage={page - 1}
+            onPageChange={handlePageChange}
+            marginPagesDisplayed={1}
+            pageRangeDisplayed={2}
+            previousLabel="‹"
+            nextLabel="›"
+            breakLabel="…"
+            containerClassName={css.pagination}
+            activeClassName={css.active}
+            disabledClassName={css.disabled}
+          />
+        </div>
       )}
 
       {selected && (
