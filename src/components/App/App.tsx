@@ -1,63 +1,68 @@
 // src/components/App/App.tsx
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
+import { Toaster, toast } from "react-hot-toast";
 
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
+import MovieModal from "../MovieModal/MovieModal";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
-import MovieModal from "../MovieModal/MovieModal";
 
-import movieService from "../../services/movieService"; // у ньому є method `search`
-import type { Movie, MoviesResponse } from "../../types/movie";
+import { searchMovies, type MoviesResponse } from "../../services/movieService";
 
+import type { Movie } from "../../types/movie";
 import css from "./App.module.css";
 
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
   const [selected, setSelected] = useState<Movie | null>(null);
 
-  const { data, isFetching, isError } = useQuery<MoviesResponse>({
-    queryKey: ["movies", query, page],
-    queryFn: () => movieService.search(query, page), // <- тут!
-    enabled: query.trim().length > 0,
-    placeholderData: (prev) => prev,
-    staleTime: 0,
-  });
+  const { data, isLoading, isError, error, isSuccess } =
+    useQuery<MoviesResponse>({
+      queryKey: ["movies", query, page],
+      queryFn: () => searchMovies(query, page),
+      enabled: query.trim().length > 0,
+      placeholderData: (prev) => prev,
+      staleTime: 0,
+    });
+
+  useEffect(() => {
+    if (isSuccess && data && data.total_results === 0) {
+      toast("No movies found");
+    }
+  }, [isSuccess, data]);
 
   const movies = data?.results ?? [];
   const totalPages = data?.total_pages ?? 0;
 
-  const handleSearch = (value: string) => {
+  const handleSubmit = (value: string) => {
     setQuery(value);
     setPage(1);
   };
 
-  const handlePageChange = (e: { selected: number }) => {
-    setPage(e.selected + 1);
+  const handleSelect = (movie: Movie) => setSelected(movie);
+
+  const handlePageChange = (evt: { selected: number }) => {
+    setPage(evt.selected + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div className={css.container}>
-      <p className={css.brand}>Powered by TMDB</p>
+    <div className={css.app}>
+      <Toaster position="top-right" />
 
-      {/* SearchBar без value — лише колбек */}
-      <SearchBar onSearch={handleSearch} />
+      {/* Використовуємо ТІЛЬКИ onSubmit */}
+      <SearchBar onSubmit={handleSubmit} />
 
-      {isError && (
-        <ErrorMessage message="Не вдалося завантажити фільми. Спробуйте ще раз." />
+      {isLoading && <Loader />}
+      {isError && <ErrorMessage message={(error as Error)?.message} />}
+
+      {!isLoading && !isError && movies.length > 0 && (
+        <MovieGrid items={movies} onSelect={handleSelect} />
       )}
-
-      {isFetching && <Loader />}
-
-      {!isFetching && query.trim() !== "" && movies.length === 0 && (
-        <ErrorMessage message="Нічого не знайдено." />
-      )}
-
-      {/* movies замість items */}
-      <MovieGrid movies={movies} onSelect={setSelected} />
 
       {totalPages > 1 && (
         <div className={css.paginationWrap}>

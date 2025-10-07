@@ -1,16 +1,44 @@
-:root {
-  color-scheme: light;
+/* src/index.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
   font-family:
     system-ui,
     -apple-system,
     Segoe UI,
     Roboto,
-    Inter,
+    Ubuntu,
+    Cantarell,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
     Arial,
     sans-serif;
-}
-body {
-  background: #fafafa;
+  background: #f6f7fb;
   color: #111;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+ul {
   margin: 0;
+  padding: 0;
+  list-style: none;
 }

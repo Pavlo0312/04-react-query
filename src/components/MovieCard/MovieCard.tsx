@@ -1,41 +1,45 @@
-import css from './MovieCard.module.css';
-import type { Movie } from '../../types/movie';
+import type { Movie } from "../../types/movie";
+import css from "./MovieCard.module.css";
 
-export interface MovieCardProps {
-  movie: Movie;
-  onClick?: (movie: Movie) => void;
-}
-const IMG = 'https://image.tmdb.org/t/p/w342';
+type Props = {
+  item: Movie;
+  onSelect: (m: Movie) => void;
+};
 
-export default function MovieCard({ movie, onClick }: MovieCardProps) {
-  const src = movie.poster_path ? `${IMG}${movie.poster_path}` : undefined;
-
-  const handleClick = () => {
-    onClick?.(movie);
-  };
+export default function MovieCard({ item, onSelect }: Props) {
+  const img = item.poster_path
+    ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+    : "";
 
   return (
-    <article
-      className={css.card}
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') handleClick();
-      }}
-    >
-      {src ? (
-        <img className={css.poster} src={src} alt={movie.title} />
-      ) : (
-        <div className={css.placeholder} aria-label="No poster" />
-      )}
-      <div className={css.meta}>
-        <h3 className={css.title}>{movie.title}</h3>
-        <p className={css.sub}>
-          <span>{movie.release_date?.slice(0, 4) || '—'}</span>
-          <span>•</span>
-          <span>⭐ {movie.vote_average.toFixed(1)}</span>
-        </p>
+    <article className={css.card} onClick={() => onSelect(item)}>
+      <div className={css.poster}>
+        {img ? (
+          <img src={img} alt={item.title} loading="lazy" />
+        ) : (
+          /* порожній плейсхолдер — лишаємо сіре тло */
+          <span
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "grid",
+              placeItems: "center",
+              color: "#778",
+            }}>
+            No Image
+          </span>
+        )}
+        <div className={css.titleBar}>{item.title}</div>
+      </div>
+
+      <div className={css.body}>
+        <div className={css.meta}>
+          <span>{item.release_date?.slice(0, 4) || "—"}</span>
+          <span className={css.rating}>
+            <span className={css.star}>★</span>
+            {item.vote_average?.toFixed(1) ?? "—"}
+          </span>
+        </div>
       </div>
     </article>
   );

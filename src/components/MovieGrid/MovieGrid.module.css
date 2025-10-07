@@ -1,10 +1,10 @@
+/* грід для карток */
 .grid {
-  list-style: none;
-  padding: 0;
-  margin: 24px 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+  align-items: stretch; /* щоб усі елементи були однакової висоти */
+  width: 100%;
 }
 
 .item {

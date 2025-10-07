@@ -1,38 +1,67 @@
 .card {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #fff;
-}
-.poster {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-}
-.placeholder {
-  width: 100%;
-  aspect-ratio: 2/3;
-  background: repeating-linear-gradient(
-    45deg,
-    #f6f7f8,
-    #f6f7f8 10px,
-    #eee 10px,
-    #eee 20px
-  );
-}
-.meta {
-  padding: 8px 10px 12px;
-}
-.title {
-  margin: 0 0 4px;
-  font-size: 16px;
-}
-.sub {
-  margin: 0;
-  color: #666;
   display: flex;
+  flex-direction: column;
+  height: 100%; /* тягнемо картку по висоті комірки гріда */
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.poster {
+  position: relative;
+  aspect-ratio: 2 / 3; /* фіксуємо пропорції постера */
+  background: #e9ecf1; /* сірий плейсхолдер, якщо немає зображення */
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* обрізаємо, щоб не деформувалось */
+}
+
+.titleBar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0));
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.body {
+  margin-top: auto; /* притискаємо вміст донизу картки */
+  padding: 12px;
+  display: grid;
+  row-gap: 8px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #556;
+  font-size: 13px;
+}
+.rating {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-weight: 600;
+}
+.star {
+  color: #f6b100;
+  font-size: 16px;
+  line-height: 1;
 }
