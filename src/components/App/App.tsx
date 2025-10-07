@@ -61,7 +61,7 @@ export default function App() {
       {isError && <ErrorMessage message={(error as Error)?.message} />}
 
       {!isLoading && !isError && movies.length > 0 && (
-        <MovieGrid items={movies} onSelect={handleSelect} />
+        <MovieGrid movies={movies} onSelect={handleSelect} />
       )}
 
       {totalPages > 1 && (

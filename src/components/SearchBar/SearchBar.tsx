@@ -1,41 +1,35 @@
-// src/components/SearchBar/SearchBar.tsx
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import css from "./SearchBar.module.css";
 
-interface SearchBarProps {
+export interface SearchBarProps {
+  /** Повертаємо значення пошуку в батьківський компонент */
   onSubmit: (value: string) => void;
-  initialValue?: string;
 }
 
-export default function SearchBar({
-  onSubmit,
-  initialValue = "",
-}: SearchBarProps) {
-  const [value, setValue] = useState(initialValue);
+export default function SearchBar({ onSubmit }: SearchBarProps) {
+  // Вимога рев'ю: використовуємо form action з FormData
+  const handleAction = (formData: FormData) => {
+    const raw = (formData.get("query") as string | null) ?? "";
+    const value = raw.trim();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const q = String(formData.get("query") || "").trim();
-    if (!q) {
-      toast.error("Please enter a search term");
+    if (!value) {
+      toast.error("Enter a search query");
       return;
     }
-    onSubmit(q);
+
+    onSubmit(value);
   };
 
   return (
     <header className={css.header}>
-      <form className={css.form} action="#" onSubmit={handleSubmit}>
+      {/* важливо: action саме функція */}
+      <form className={css.form} action={handleAction}>
         <input
           className={css.input}
           type="text"
-          name="query"
+          name="query" /* <- обов’язкове ім’я для FormData */
           placeholder="Search movies..."
           autoComplete="off"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
         />
         <button className={css.btn} type="submit">
           Search
