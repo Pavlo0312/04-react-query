@@ -10,7 +10,7 @@ import MovieModal from "../MovieModal/MovieModal";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
-import { searchMovies, type MoviesResponse } from "../../services/movieService";
+import { fetchMovies, type MoviesResponse } from "../../services/movieService";
 
 import type { Movie } from "../../types/movie";
 import css from "./App.module.css";
@@ -23,7 +23,7 @@ export default function App() {
   const { data, isLoading, isError, error, isSuccess } =
     useQuery<MoviesResponse>({
       queryKey: ["movies", query, page],
-      queryFn: () => searchMovies(query, page),
+      queryFn: () => fetchMovies(query, page),
       enabled: query.trim().length > 0,
       placeholderData: (prev) => prev,
       staleTime: 0,
